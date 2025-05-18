@@ -5,20 +5,25 @@ import { AuthService } from "./auth.services";
 import { Request, RequestHandler } from "express";
 
 const Login: RequestHandler = catchAsync(async (req, res) => {
-    const result = await AuthService.Login(req.body);
-    const { access_token, refresh_token } = result;
-    res.cookie('REFRESH_TOKEN', refresh_token,
-        { expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) });
-    sendResponse(res,
-        {
-            success: true,
-            statusCode: status.OK,
-            message: 'Login successful',
-            data: { access_token }
-        });
+  const result = await AuthService.Login(req.body);
+  const { access_token, refresh_token } = result;
+  res.cookie('REFRESH_TOKEN', refresh_token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'strict',
+    expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+  });
+
+  sendResponse(res,
+    {
+      success: true,
+      statusCode: status.OK,
+      message: 'Login successful',
+      data: { access_token }
+    });
 });
 
-const ChangePassword = catchAsync(async (req: Request & {user?: any}, res) => {
+const ChangePassword = catchAsync(async (req: Request & { user?: any }, res) => {
   await AuthService.ChangePassword(req.body, req.user);
 
   sendResponse(res, {
@@ -28,7 +33,7 @@ const ChangePassword = catchAsync(async (req: Request & {user?: any}, res) => {
   });
 });
 
-const GetMyProfile = catchAsync(async (req: Request & {user?: any}, res) => {
+const GetMyProfile = catchAsync(async (req: Request & { user?: any }, res) => {
   const result = await AuthService.GetMyProfile(req.user);
 
   sendResponse(res, {
@@ -40,7 +45,7 @@ const GetMyProfile = catchAsync(async (req: Request & {user?: any}, res) => {
 });
 
 export const AuthController = {
-    Login,
-    ChangePassword,
-    GetMyProfile
+  Login,
+  ChangePassword,
+  GetMyProfile
 }

@@ -25,7 +25,7 @@ app.use(
 
 app.get("/", (req: Request, res: Response) => {
   res.send({
-    Message: "Event Management server..",
+    Message: "Portfolio manage server..",
   });
 });
 
