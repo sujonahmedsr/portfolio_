@@ -3,6 +3,7 @@ import { AuthRoutes } from "../modules/Auth/auth.routes";
 import { blogRoutes } from "../modules/Blogs/blog.routes";
 import { projectRoutes } from "../modules/Projects/project.routes";
 import { skillRoutes } from "../modules/Skills/skill.routes";
+import { experienceRoutes } from "../modules/Experience/experience.route";
 
 const router = Router()
 
@@ -22,6 +23,10 @@ const moduleRoutes = [
     {
         path: '/skills',
         route: skillRoutes
+    },
+    {
+        path: '/experiences',
+        route: experienceRoutes
     },
 ]
 
