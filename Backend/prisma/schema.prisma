@@ -76,6 +76,7 @@ model Skill {
   name      String
   level     String   // e.g., Beginner, Intermediate, Expert
   category  String   // e.g., Frontend, Backend, Tools
+  image_url String?
   created_at DateTime @default(now())
   is_deleted  Boolean  @default(false)
 
