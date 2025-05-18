@@ -1,0 +1,20 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.EventRoutes = void 0;
+const express_1 = require("express");
+const event_controller_1 = require("./event.controller");
+const validateRequest_1 = __importDefault(require("../../middlewares/validateRequest"));
+const event_validation_1 = require("./event.validation");
+const Auth_1 = require("../../middlewares/Auth");
+const client_1 = require("@prisma/client");
+const route = (0, express_1.Router)();
+route.post('/', (0, validateRequest_1.default)(event_validation_1.createEventZodSchema), (0, Auth_1.auth)(client_1.Role.USER), event_controller_1.eventController.createEvent);
+route.get('/', event_controller_1.eventController.getAllEvents);
+route.get('/:id', event_controller_1.eventController.getSingleEvent);
+route.patch('/:id', (0, validateRequest_1.default)(event_validation_1.updateEventZodSchema), (0, Auth_1.auth)(client_1.Role.USER), event_controller_1.eventController.updateEvent);
+route.delete('/:id', (0, Auth_1.auth)(client_1.Role.USER, client_1.Role.ADMIN), event_controller_1.eventController.deleteEvent);
+route.delete('/:id/admin', (0, Auth_1.auth)(client_1.Role.ADMIN), event_controller_1.eventController.deleteEvent);
+exports.EventRoutes = route;

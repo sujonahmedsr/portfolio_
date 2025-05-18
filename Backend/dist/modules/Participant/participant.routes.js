@@ -1,0 +1,13 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.ParticipantRoutes = void 0;
+const express_1 = require("express");
+const participant_controller_1 = require("./participant.controller");
+const Auth_1 = require("../../middlewares/Auth");
+const client_1 = require("@prisma/client");
+const route = (0, express_1.Router)();
+route.post('/:eventId/join', (0, Auth_1.auth)(client_1.Role.USER), participant_controller_1.participantController.createParticipant);
+route.get("/:eventId/participants", (0, Auth_1.auth)(client_1.Role.USER, client_1.Role.ADMIN), participant_controller_1.participantController.participants);
+route.patch('/:id/approve', (0, Auth_1.auth)(client_1.Role.ADMIN, client_1.Role.USER), participant_controller_1.participantController.ApproveParticipant);
+route.patch('/:id/reject', (0, Auth_1.auth)(client_1.Role.ADMIN, client_1.Role.USER), participant_controller_1.participantController.RejectParticipant);
+exports.ParticipantRoutes = route;
