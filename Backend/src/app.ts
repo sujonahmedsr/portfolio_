@@ -14,8 +14,6 @@ app.use(
   cors({
     origin: [
       'http://localhost:3000',
-      'https://bong-events-a9.vercel.app',
-      'https://event-mangement-zeta.vercel.app',
     ],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     allowedHeaders:
