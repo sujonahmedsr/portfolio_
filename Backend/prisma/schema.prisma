@@ -42,9 +42,10 @@ model Blog {
   title       String
   content     String
   image_url   String?
-  is_published Boolean  @default(false)
+  is_published Boolean  @default(true)
   created_at  DateTime  @default(now())
   updated_at  DateTime  @updatedAt
+  is_deleted  Boolean  @default(false)
 
   author_id   String
   author      User     @relation(fields: [author_id], references: [id])
@@ -62,6 +63,7 @@ model Project {
   image_url   String?
   created_at  DateTime @default(now())
   updated_at  DateTime @updatedAt
+  is_deleted  Boolean  @default(false)
 
   user_id     String
   user        User     @relation(fields: [user_id], references: [id])
@@ -75,6 +77,7 @@ model Skill {
   level     String   // e.g., Beginner, Intermediate, Expert
   category  String   // e.g., Frontend, Backend, Tools
   created_at DateTime @default(now())
+  is_deleted  Boolean  @default(false)
 
   user_id   String
   user      User     @relation(fields: [user_id], references: [id])
@@ -92,6 +95,7 @@ model Experience {
   end_date    DateTime?
   description String?
   created_at  DateTime @default(now())
+  is_deleted  Boolean  @default(false)
 
   user_id     String
   user        User     @relation(fields: [user_id], references: [id])
