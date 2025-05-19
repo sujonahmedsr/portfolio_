@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { NextFunction, Request, Response } from 'express';
 import { AuthController } from './auth.controller';
 import validateRequest from '../../middlewares/validateRequest';
 import { ChangePasswordSchema, LoginSchema, RegistrationSchema } from './auth.validation';
@@ -7,7 +7,16 @@ import { Role } from '@prisma/client';
 
 const router = express.Router();
 
-router.post('/register', validateRequest(RegistrationSchema), AuthController.Login);
+router.post(
+  '/register',
+  (req: Request, res: Response, next: NextFunction) => {
+    console.log("From debug middleware", req.body); // 👈 Check here
+    next(); // Don't forget this!
+  },
+  validateRequest(RegistrationSchema), // Zod validator
+  AuthController.createUser // Main controller
+);
+
 
 router.post('/login', validateRequest(LoginSchema), AuthController.Login);
 
