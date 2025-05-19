@@ -4,8 +4,9 @@ import sendResponse from "../../utils/sendResponse";
 import httpStatus from "http-status";
 import { projectService } from "./project.service";
 
-const createProject = catchAsync(async (req: Request, res: Response) => {
-  const result = await projectService.createProject(req.body);
+const createProject = catchAsync(async (req: Request & 
+  {user?: any}, res: Response) => {
+  const result = await projectService.createProject(req.body, req.user);
   sendResponse(res, {
     statusCode: httpStatus.CREATED,
     success: true,

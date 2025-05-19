@@ -1,15 +1,15 @@
-import { Prisma, Project } from "@prisma/client";
+import { Prisma, Project, User } from "@prisma/client";
 import prisma from "../../utils/prisma";
 import ApiError from "../../errors/ApiError";
 import httpStatus from "http-status";
 
-const createProject = async (payload: Project) => {
-  const userExists = await prisma.user.findUnique({ where: { id: payload.user_id } });
+const createProject = async (payload: Project, user: User) => {
+  const userExists = await prisma.user.findUnique({ where: { id: user.id } });
   if (!userExists) {
     throw new ApiError(httpStatus.NOT_FOUND, "User not found");
   }
 
-  const project = await prisma.project.create({ data: payload });
+  const project = await prisma.project.create({ data: {...payload, user_id: user.id} });
   return project;
 };
 

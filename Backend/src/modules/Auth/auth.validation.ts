@@ -1,5 +1,15 @@
 import { z } from "zod";
 
+
+
+export const RegistrationSchema = z.object({
+    body: z.object({
+        name: z.string(),
+        email: z.string().email('Invalid email format'),
+        password: z.string(),
+    }),
+});
+
 export const LoginSchema = z.object({
     body: z.object({
         email: z.string().email('Invalid email format'),

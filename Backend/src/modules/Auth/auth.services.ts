@@ -6,23 +6,71 @@ import bcrypt from "bcrypt"
 import { generateToken } from "../../middlewares/jwtHelpers";
 import config from "../../config";
 import { JwtPayload } from "jsonwebtoken";
+import { Role, User } from "@prisma/client";
+
+const createUser = async (
+  payload: User
+) => {
+
+  const isUserExists = await prisma.user.findFirst({
+    where: { email: payload.email },
+  });
+
+  if (isUserExists) {
+    throw new ApiError(status.CONFLICT, 'User already exists');
+  }
+
+  const hashedPassword = await bcrypt.hash(
+    payload.password,
+    Number(12),
+  );
+
+  const user = await prisma.user.create({
+    data: {
+      name: payload.name,
+      email: payload.email,
+      password: hashedPassword,
+      role: Role.ADMIN,
+    },
+  });
+
+  const jwtPayload = {
+    id: user.id,
+    email: user.email,
+    role: user.role,
+  };
+
+  const access_token = generateToken(
+    jwtPayload,
+    config.jwt.jwt_secret as string,
+    config.jwt.expires_in as string,
+  );
+
+  const refresh_token = generateToken(
+    jwtPayload,
+    config.jwt.refresh_token_secret as string,
+    config.jwt.refresh_token_expires_in as string,
+  );
+
+  return { access_token, refresh_token };
+};
 
 const Login = async (payload: ILogin) => {
-    const user = await prisma.user.findFirst({ where: { email: payload.email } });
+  const user = await prisma.user.findFirst({ where: { email: payload.email } });
 
-    if (!user) throw new ApiError(status.NOT_FOUND, 'No user found with this email');
+  if (!user) throw new ApiError(status.NOT_FOUND, 'No user found with this email');
 
-    const isPasswordMatched = await bcrypt.compare(payload.password, user.password);
+  const isPasswordMatched = await bcrypt.compare(payload.password, user.password);
 
-    if (!isPasswordMatched) throw new ApiError(status.UNAUTHORIZED, 'Invalid email or password');
+  if (!isPasswordMatched) throw new ApiError(status.UNAUTHORIZED, 'Invalid email or password');
 
-    const jwtPayload = { id: user.id, email: user.email, role: user.role };
+  const jwtPayload = { id: user.id, email: user.email, role: user.role };
 
-    const access_token = generateToken(jwtPayload, config.jwt.jwt_secret as string, config.jwt.expires_in as string);
+  const access_token = generateToken(jwtPayload, config.jwt.jwt_secret as string, config.jwt.expires_in as string);
 
-    const refresh_token = generateToken(jwtPayload, config.jwt.refresh_token_secret as string, config.jwt.refresh_token_expires_in as string);
+  const refresh_token = generateToken(jwtPayload, config.jwt.refresh_token_secret as string, config.jwt.refresh_token_expires_in as string);
 
-    return { access_token, refresh_token };
+  return { access_token, refresh_token };
 };
 
 const ChangePassword = async (
@@ -81,7 +129,8 @@ const GetMyProfile = async (user: JwtPayload) => {
 };
 
 export const AuthService = {
-    Login,
-    ChangePassword,
-    GetMyProfile
+  createUser,
+  Login,
+  ChangePassword,
+  GetMyProfile
 }
