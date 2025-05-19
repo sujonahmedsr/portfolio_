@@ -15,17 +15,13 @@ const createProject = async (payload: Project, user: User) => {
 
 const getAllProjects = async () => {
   return await prisma.project.findMany({
-    where: { is_deleted: false },
-    include: { user: true },
-    orderBy: { created_at: "desc" },
+    where: { is_deleted: false }, orderBy: { created_at: "desc" },
   });
 };
 
 const getSingleProject = async (id: string) => {
   const project = await prisma.project.findUnique({
-    where: { id },
-    include: { user: true },
-  });
+    where: { id }});
 
   if (!project || project.is_deleted) {
     throw new ApiError(httpStatus.NOT_FOUND, "Project not found");

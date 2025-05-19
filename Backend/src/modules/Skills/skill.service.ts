@@ -5,11 +5,11 @@ import httpStatus from "http-status";
 
 const createSkill = async (payload: Skill) => {
   const exists = await prisma.skill.findFirst({
-    where: { user_id: payload.user_id, name: payload.name },
+    where: { name: payload.name },
   });
 
   if (exists) {
-    throw new ApiError(httpStatus.CONFLICT, "Skill already exists for this user");
+    throw new ApiError(httpStatus.CONFLICT, "Skill already exists.");
   }
 
   return await prisma.skill.create({ data: payload });
@@ -18,14 +18,12 @@ const createSkill = async (payload: Skill) => {
 const getAllSkills = async () => {
   return await prisma.skill.findMany({
     where: { is_deleted: false },
-    include: { user: true },
   });
 };
 
 const getSingleSkill = async (id: string) => {
   const skill = await prisma.skill.findUnique({
     where: { id },
-    include: { user: true },
   });
 
   if (!skill || skill.is_deleted) {
