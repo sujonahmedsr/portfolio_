@@ -1,23 +1,33 @@
 import prisma from "../../utils/prisma";
-import { Prisma } from "@prisma/client";
+import { Experience, Prisma, User } from "@prisma/client";
 import ApiError from "../../errors/ApiError";
 import httpStatus from "http-status";
 
-const createExperience = async (payload: Prisma.ExperienceCreateInput) => {
-  return await prisma.experience.create({ data: payload });
+const createExperience = async (payload: Experience, user: User) => {
+const existingUser = await prisma.user.findUnique({
+    where: { id: user.id },
+  });
+
+  if (!existingUser) {
+    throw new ApiError(httpStatus.NOT_FOUND, "Author not found.");
+  }
+
+  const experience = await prisma.experience.create({
+    data: {...payload, user_id: user.id},
+  });
+
+  return experience;
 };
 
 const getAllExperiences = async () => {
   return await prisma.experience.findMany({
-    where: { is_deleted: false },
-    include: { user: true },
+    where: { is_deleted: false }
   });
 };
 
 const getSingleExperience = async (id: string) => {
   const exp = await prisma.experience.findUnique({
-    where: { id },
-    include: { user: true },
+    where: { id }
   });
 
   if (!exp || exp.is_deleted) {

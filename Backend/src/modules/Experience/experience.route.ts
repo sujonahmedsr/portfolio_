@@ -5,13 +5,15 @@ import {
   updateExperienceZodSchema,
 } from "./experience.validation";
 import { experienceController } from "./experience.controller";
+import { auth } from "../../middlewares/Auth";
+import { Role } from "@prisma/client";
 
 const router = express.Router();
 
-router.post("/", validateRequest(createExperienceZodSchema), experienceController.createExperience);
+router.post("/", validateRequest(createExperienceZodSchema), auth(Role.ADMIN), experienceController.createExperience);
 router.get("/", experienceController.getAllExperiences);
 router.get("/:id", experienceController.getSingleExperience);
-router.patch("/:id", validateRequest(updateExperienceZodSchema), experienceController.updateExperience);
-router.delete("/:id", experienceController.deleteExperience);
+router.patch("/:id", auth(Role.ADMIN), validateRequest(updateExperienceZodSchema), experienceController.updateExperience);
+router.delete("/:id", auth(Role.ADMIN), experienceController.deleteExperience);
 
 export const experienceRoutes = router;

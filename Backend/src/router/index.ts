@@ -17,16 +17,16 @@ const moduleRoutes = [
         route: blogRoutes
     },
     {
+        path: '/experiences',
+        route: experienceRoutes
+    },
+    {
         path: '/projects',
         route: projectRoutes
     },
     {
         path: '/skills',
         route: skillRoutes
-    },
-    {
-        path: '/experiences',
-        route: experienceRoutes
     },
 ]
 

@@ -4,8 +4,8 @@ import sendResponse from "../../utils/sendResponse";
 import httpStatus from "http-status";
 import { experienceService } from "./experience.service";
 
-const createExperience = catchAsync(async (req: Request, res: Response) => {
-  const result = await experienceService.createExperience(req.body);
+const createExperience = catchAsync(async (req: Request & {user?: any}, res: Response) => {
+  const result = await experienceService.createExperience(req.body, req.user);
   sendResponse(res, {
     statusCode: httpStatus.CREATED,
     success: true,
