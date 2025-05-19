@@ -1,4 +1,4 @@
-import { RequestHandler } from "express";
+import { Request, RequestHandler } from "express";
 import catchAsync from "../../utils/catchAsync";
 import sendResponse from "../../utils/sendResponse";
 import status from "http-status";
@@ -7,8 +7,8 @@ import { blogService } from "./blog.service";
 import BlogConstants from "./blog.constant";
 
 // Create a new blog post
-const createBlog: RequestHandler = catchAsync(async (req, res) => {
-  const result = await blogService.createBlog(req.body);
+const createBlog: RequestHandler = catchAsync(async (req: Request & {user?:any}, res) => {
+  const result = await blogService.createBlog(req.body, req.user);
   sendResponse(res, {
     statusCode: status.CREATED,
     message: "Blog created successfully",

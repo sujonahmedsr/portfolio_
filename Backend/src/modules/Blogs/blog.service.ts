@@ -1,4 +1,4 @@
-import { Blog, Prisma } from "@prisma/client";
+import { Blog, Prisma, User } from "@prisma/client";
 import prisma from "../../utils/prisma";
 import ApiError from "../../errors/ApiError";
 import httpStatus from "http-status";
@@ -10,9 +10,9 @@ interface IGetBlogsParams {
 }
 
 // Create Blog
-const createBlog = async (payload: Blog) => {
+const createBlog = async (payload: Blog, user: User) => {
   const existingUser = await prisma.user.findUnique({
-    where: { id: payload.author_id },
+    where: { id: user.id },
   });
 
   if (!existingUser) {
@@ -20,7 +20,7 @@ const createBlog = async (payload: Blog) => {
   }
 
   const blog = await prisma.blog.create({
-    data: payload,
+    data: {...payload, author_id: user.id},
   });
 
   return blog;
@@ -113,7 +113,12 @@ const getSingleBlog = async (id: string) => {
   const blog = await prisma.blog.findUnique({
     where: { id, is_deleted: false },
     include: {
-      author: true,
+      author: {
+        select: {
+          name: true,
+          email: true
+        }
+      },
     },
   });
 
